@@ -12,6 +12,8 @@ public class ItemDatabase : MonoBehaviour {
 	// identifier for item attributes
 	private const string _ID = "id";
 	private const string _NAME = "name";
+	private const string _HANDLE = "handle";
+	private const string _DESCRIPTION = "descr";
 
 	/*********** Members **********/
 	private static Dictionary<int, Item> database;
@@ -36,11 +38,12 @@ public class ItemDatabase : MonoBehaviour {
 
 
 	// slow access to Item (don't use at in-game)
+	// searches for 'name' in databases ID and handle keys.
 	// throws KeyNotFoundException, if 'name' is invalid
 	public static Item FetchItemByName(string name) {
-		// find the object with name 'name' and return it
+		// find the object with name, or handle 'name' and return it
 		foreach(Item item in database.Values)
-			if(item.Name == name)
+			if(item.Name == name || item.Handle == name)
 				return item;
 
 		// throw exception
@@ -56,16 +59,28 @@ public class ItemDatabase : MonoBehaviour {
 		
 		Item item;
 		JsonData itemData;
-
 		database = new Dictionary<int, Item>();
-		// maps the whole Json structure to a generic object
-		itemData = JsonMapper.ToObject(File.ReadAllText(filename));
-		// map every object to an individual Item object, append the
-		// <id, item> pair to database
-		foreach(JsonData element in itemData) {
-			// parse the current item
-			item = new Item((int) element[_ID], (string) element[_NAME]);
-			database.Add(item.ID, item);
+
+		try {
+			// maps the whole Json structure to a generic object
+			itemData = JsonMapper.ToObject(File.ReadAllText(filename));
+
+			// map every object to an individual Item object, append the
+			// <id, item> pair to database
+			foreach(JsonData element in itemData) {
+				// map the current item
+				item = new Item(
+					(int)    element[_ID],
+					(string) element[_NAME],
+					(string) element[_HANDLE],
+					(string) element[_DESCRIPTION]
+				);
+				database.Add(item.ID, item);
+			}
+		} catch (JsonException) {
+			Debug.LogErrorFormat("ItemDatabase could not be mapped. Check '{0}' for syntax errors", filename);
+		} catch (FileNotFoundException) {
+			Debug.LogErrorFormat("ItemDatabase could not be mapped. '{0}' does not exist", filename);
 		}
 
 		// return database (redundant)
@@ -78,6 +93,8 @@ public class ItemDatabase : MonoBehaviour {
 
 		public int ID { get; private set; }
 		public string Name { get; private set; }
+		public string Handle { get; private set; }
+		public string Description { get; private set; }
 
 		// Default constructor builds invalid Item
 		// with Item.id = -1
@@ -85,9 +102,11 @@ public class ItemDatabase : MonoBehaviour {
 			this.ID = INVALID_ID;
 		}
 
-		public Item(int id, string name) {
+		public Item(int id, string name, string handle, string description) {
 			this.ID = id;
 			this.Name = name;
+			this.Handle = handle;
+			this.Description = description;
 		}
 
 		public bool isValid() { return this.ID != INVALID_ID; }
