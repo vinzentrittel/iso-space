@@ -14,6 +14,12 @@ using Item = ItemDatabase.Item;
  */
 public class ItemController : MonoBehaviour {
 
+	private const string INVENTORY_NAME = "Inventory";
+	private const string PLAYER_NAME = "Player";
+
+	private Item item;
+	private InventoryController inventory;
+
 #if COLLECT_ON_KEYPRESS
 	[Tooltip("Key binding to collect this item")]
 	public /*const*/ KeyCode actionKey = KeyCode.E;
@@ -22,9 +28,6 @@ public class ItemController : MonoBehaviour {
 	public int itemID = Item.INVALID_ID;
 	[Tooltip("Fetch the object data by it's database name or handle identifier")]
 	public string itemName;
-
-
-	private Item item;
 
 
 	// Use this for initialization
@@ -37,22 +40,27 @@ public class ItemController : MonoBehaviour {
 		// collect collision information
 		colliderInfo = GetComponent<BoxCollider>();
 		colliderInfo.isTrigger = true;
+
+		// get current inventory controller
+		inventory = GameObject.Find(INVENTORY_NAME)
+			.GetComponent<InventoryController>();
+		if(inventory == null)
+			Debug.LogErrorFormat("Cannot find inventory GameObject '{0}' in scene.", INVENTORY_NAME);
 	}
 
 
 	// Gives player chance to collect items, when in touch
 	// with it
 	void OnTriggerStay(Collider other) {
-		Debug.Log(other.gameObject.name);
 #if COLLECT_ON_KEYPRESS
-		if(Input.GetKeyDown(actionKey) && other.gameObject.name == "Player")
+		if(Input.GetKeyDown(actionKey) && other.gameObject.name == PLAYER_NAME)
 #else
 		if(other.gameObject.name == "Player")
 #endif
-		{
-			// equip item
+		// try to store item in inventory
+		if(inventory.AddToInventory(item))
+			// if item is stored, destroy visual representation
 			Destroy(gameObject);
-		}		
 	}
 
 
