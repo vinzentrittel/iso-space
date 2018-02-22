@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 using Item = ItemDatabase.Item;
 
 public class InventoryController : MonoBehaviour {
 
+	private const string PREFAB_PATH = "Assets/Prefabs/";
 	private const string PLAYER_NAME = "Player";
 
 	private Dictionary<int, TupleItem> dictItems;
@@ -17,13 +19,12 @@ public class InventoryController : MonoBehaviour {
 	struct TupleItem {
 		public int	count;
 		public Item data;
-		public GameObject gObject;
 	}
 
 
 	void Start () {
 		dictItems = new Dictionary<int, TupleItem>();
-		player = GameObject.Find("Player");
+		player = GameObject.Find(PLAYER_NAME);
 	}
 
 
@@ -35,20 +36,16 @@ public class InventoryController : MonoBehaviour {
 	}
 	
 
-	public bool AddToInventory(Item dataItem, GameObject objItem) {		
+	public bool AddToInventory(Item item) {		
 		// if an equal item is in this inventory
-		if(dictItems.ContainsKey(dataItem.ID)) {
-			if(!AddToStack(dataItem.ID)) {
+		if(dictItems.ContainsKey(item.ID)) {
+			if(!AddToStack(item.ID)) {
 				// TODO: show in UI
-				Debug.LogFormat("You cannot store more than {0} {1}s in this inventory", stackSize, dataItem.Name);
+				Debug.LogFormat("You cannot store more than {0} {1}s in this inventory", stackSize, item.Name);
 				return false;
 			}
-			if(objItem != dictItems[dataItem.ID].gObject)
-				Destroy(objItem);
-			// if no other instancec of item is found
 		} else {
-			AddNewStack(dataItem, objItem);
-			Hide(objItem);
+			AddNewStack(item);
 		}
 
 		return true;
@@ -57,38 +54,44 @@ public class InventoryController : MonoBehaviour {
 
 	public void DumpItem(int id) {
 		GameObject objItem;
-		bool success;
+		Item dataItem;
 
-		objItem = RemoveFromInventory(id, out success);
-		if(!success) return;
-		
-		objItem.transform.position = player.transform.position;
-		Hide(objItem, true);
+		if(RemoveFromInventory(id, out dataItem)) {
+			try {
+				// TODO: register all prefabs and take them from an array
+				// instead of loading at runtime
+				objItem = (GameObject) AssetDatabase.LoadAssetAtPath(
+					PREFAB_PATH + dataItem.Prefab + ".prefab", typeof(GameObject));
+				// copy the prefab to player's location
+				objItem = Instantiate(objItem);
+				objItem.transform.position = player.transform.position;
+
+			} catch (System.ArgumentException ex) {
+				Debug.LogErrorFormat("Asset for {0} from ({1}) could not be loaded",
+					dataItem.Handle,
+					PREFAB_PATH + dataItem.Prefab + ".prefab");
+			}
+		}
 	}
 
 
-	public GameObject RemoveFromInventory(int id, out bool success) {
-
-		GameObject item = null;
-		int count = 0;
-		success = false;
-
+	public bool RemoveFromInventory(int id, out Item item) {
+		
 		// find item
+		item = new Item();
 		if(dictItems.ContainsKey(id)) {
-			// store item
-			item = dictItems[id].gObject;
 			// remove one item
+			item = dictItems[id].data;
 			RemoveFromStack(id);
-			if((count = dictItems[id].count) <= 0) {
-				// remove stored data, if no item remains
-				Debug.LogFormat("{0} remain.", dictItems[id].count);
+			// remove stored data, if no item remains
+			if(dictItems[id].count <= 0)
 				dictItems.Remove(id);
-			}
+			
 			// item successfully popped
-			success = true;
-		}
-		// return popped item, if any
-		return (count > 0) ? Instantiate(item) : item;
+			return true;
+		} else
+			// no more items of id
+			return false;
 	}
 
 
@@ -110,18 +113,11 @@ public class InventoryController : MonoBehaviour {
 	}
 
 
-	private void Hide(GameObject obj, bool unhide = false) {
-		obj.SetActive(unhide);
-		obj.hideFlags = unhide ? HideFlags.None : HideFlags.HideInInspector;
-	}
-
-
-	private void AddNewStack(Item dataItem, GameObject objItem) {
+	private void AddNewStack(Item item) {
 		TupleItem newTuple = new TupleItem();
 		newTuple.count = 1;
-		newTuple.data = dataItem;
-		newTuple.gObject = objItem;
+		newTuple.data = item;
 
-		dictItems.Add(dataItem.ID, newTuple);
+		dictItems.Add(item.ID, newTuple);
 	}
 }

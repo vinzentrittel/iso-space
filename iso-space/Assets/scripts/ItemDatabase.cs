@@ -13,6 +13,7 @@ public class ItemDatabase : MonoBehaviour {
 	private const string _ID = "id";
 	private const string _NAME = "name";
 	private const string _HANDLE = "handle";
+	private const string _PREFAB = "prefab";
 	private const string _DESCRIPTION = "descr";
 
 	/*********** Members **********/
@@ -73,6 +74,7 @@ public class ItemDatabase : MonoBehaviour {
 					(int)    element[_ID],
 					(string) element[_NAME],
 					(string) element[_HANDLE],
+					(string) element[_PREFAB],
 					(string) element[_DESCRIPTION]
 				);
 				database.Add(item.ID, item);
@@ -94,6 +96,7 @@ public class ItemDatabase : MonoBehaviour {
 		public int ID { get; private set; }
 		public string Name { get; private set; }
 		public string Handle { get; private set; }
+		public string Prefab { get; private set; }
 		public string Description { get; private set; }
 
 		// Default constructor builds invalid Item
@@ -102,10 +105,11 @@ public class ItemDatabase : MonoBehaviour {
 			this.ID = INVALID_ID;
 		}
 
-		public Item(int id, string name, string handle, string description) {
+		public Item(int id, string name, string handle, string prefab, string description) {
 			this.ID = id;
 			this.Name = name;
 			this.Handle = handle;
+			this.Prefab = prefab;
 			this.Description = description;
 		}
 
