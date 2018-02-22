@@ -58,9 +58,8 @@ public class ItemController : MonoBehaviour {
 		if(other.gameObject.name == "Player")
 #endif
 		// try to store item in inventory
-		if(inventory.AddToInventory(item))
-			// if item is stored, destroy visual representation
-			Destroy(gameObject);
+		inventory.AddToInventory(item, gameObject);
+		
 	}
 
 
