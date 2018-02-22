@@ -25,56 +25,69 @@ public class InventoryController : MonoBehaviour {
 	void Start () {
 		dictItems = new Dictionary<int, TupleItem>();
 		player = GameObject.Find(PLAYER_NAME);
-	}
+	} // end : Start
 
 
 	void Update() {
+		// TODO: remove
+		// just for demonstration purposes
 		if(Input.GetKeyDown(KeyCode.Q))
 			DumpItem(1);
-
-		//Debug.Log(dictItems[1].count);
-	}
+	} // end : Update
 	
 
+	/* AddToInventory()
+	 *  Adds one element of item inside the inventory.
+	 *  If the item already exists, stack them up to stackSize
+	 *  (see above) instances.
+	 *  
+	 *  returns false, if no more items id fit on the stack
+	 *          true,  in all other cases
+	 */
 	public bool AddToInventory(Item item) {		
 		// if an equal item is in this inventory
 		if(dictItems.ContainsKey(item.ID)) {
+			// try to add on top of stack
 			if(!AddToStack(item.ID)) {
 				// TODO: show in UI
 				Debug.LogFormat("You cannot store more than {0} {1}s in this inventory", stackSize, item.Name);
 				return false;
 			}
 		} else {
+			// open new stack
 			AddNewStack(item);
 		}
 
+		// item was stacked
 		return true;
-	}
+	} // end : Add to Inventory
 
 
+	/* DumpItem()
+	 *  Removes the fetched item from the inventory or stack
+	 *  and places a copy of the assigned prefab on the
+	 *  player position.
+	 *  If no item with id is left, nothing happens.
+	 */
 	public void DumpItem(int id) {
 		GameObject objItem;
 		Item dataItem;
 
 		if(RemoveFromInventory(id, out dataItem)) {
-			try {
-				// TODO: register all prefabs and take them from an array
-				// instead of loading at runtime
-				objItem = (GameObject) AssetDatabase.LoadAssetAtPath(
-					PREFAB_PATH + dataItem.Prefab + ".prefab", typeof(GameObject));
-				// copy the prefab to player's location
-				objItem = Instantiate(objItem);
-				objItem.transform.position = player.transform.position;
-
-			} catch (System.ArgumentException ex) {
-				Debug.LogErrorFormat("Asset for {0} from ({1}) could not be loaded",
-					dataItem.Handle,
-					PREFAB_PATH + dataItem.Prefab + ".prefab");
-			}
+			// copy the prefab to player's location
+			objItem = ItemPrefabRegister.GetInstance().GetClone(dataItem.Prefab);
+			objItem.transform.position = player.transform.position;
 		}
-	}
+	} // end : DumpItem
 
 
+	/* RemoveFromInventory()
+	 *  Removes the fetched item from the inventory or stack
+	 *  If the last item is removed from stack, the dictionary
+	 *  entry is dumped.
+	 * 
+	 *  returns false, if no items id are left in inventory
+	 */
 	public bool RemoveFromInventory(int id, out Item item) {
 		
 		// find item
@@ -92,16 +105,24 @@ public class InventoryController : MonoBehaviour {
 		} else
 			// no more items of id
 			return false;
-	}
+	} // end : RemoveFromInventory
 
+
+	/********** Helper Functions *********/
+	//
 
 	private void RemoveFromStack(int id) {
 		TupleItem temp = dictItems[id];
 		--temp.count;
 		dictItems[id] = temp;
-	}
+	} // end : RemoveFromStack
 
 
+	/* AddToStack()
+	 *  Increments the count for entry with id.
+	 *  The id must exist in dictItem.
+	 *  throws KeyNotFoundException
+	 */
 	private bool AddToStack(int id) {
 		TupleItem temp = dictItems[id];
 		if(temp.count >= stackSize)
@@ -110,14 +131,20 @@ public class InventoryController : MonoBehaviour {
 		temp.count++;
 		dictItems[id] = temp; 
 		return true;
-	}
+	} // end : AddToStack
 
 
+	/* AddNewStack()
+	 *  Adds a new stack for id in dictionary.
+	 *  The id must not exist, yet.
+	 *  throws System.ArgumentException
+	 */
 	private void AddNewStack(Item item) {
+		System.ArgumentException ex;
 		TupleItem newTuple = new TupleItem();
 		newTuple.count = 1;
 		newTuple.data = item;
 
 		dictItems.Add(item.ID, newTuple);
-	}
-}
+	} // end : AddNewStack
+} // end : InventoryController

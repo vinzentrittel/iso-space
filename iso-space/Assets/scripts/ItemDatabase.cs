@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using LitJson;
 
+/* ItemDatabase
+ *  Loads item data from Json database. Corresponding prefabs
+ *  will be loaded via ItemPrefabRegister.
+ */
 public class ItemDatabase : MonoBehaviour {
 
 	/*********** Constants *********/
@@ -21,26 +25,39 @@ public class ItemDatabase : MonoBehaviour {
 
 
 	void Awake() {
+		bool   success;
 		string filename = Application.dataPath + ITEM_FILE;
 
 		database = InvokeDatabase(filename);
-	}
+
+		// load every prefab data to the database
+		foreach(Item item in database.Values) 
+			ItemPrefabRegister.GetInstance().AddPrefab(item.Prefab);
+		success = ItemPrefabRegister.GetInstance().LoadPrefabs();
+		if(!success)
+			Debug.Log("Some item prefabs could not be loaded. See Error Log!");
+	} // end : Awake
 
 
-	// fast access to Item
-	// throws KeyNotFoundException, if ID is invalid
+	/* FetchItemById()
+	 *  Very fast access to item
+	 *  throws KeyNotFoundException, if id is invalid
+	 */
 	public static Item FetchItemById(int id) {
 		try {
-		return database[id];
+			return database[id];
 		} catch (KeyNotFoundException) {
 			throw new KeyNotFoundException("ID: " + id + " was not found in ItemDatabase");
 		}
-	}
+	} // end : FetchItemById()
 
 
-	// slow access to Item (don't use at in-game)
-	// searches for 'name' in databases ID and handle keys.
-	// throws KeyNotFoundException, if 'name' is invalid
+	/* FetchItemByName()
+	 *  Slow access to item, searches in name and handle for the passed
+	 *  parameter. Only use in development stage or on loading screen.
+	 *  Use FetchItemById in time critical situations.
+	 *  throws KeyNotFoundException, if 'name' is invalid
+	 */
 	public static Item FetchItemByName(string name) {
 		// find the object with name, or handle 'name' and return it
 		foreach(Item item in database.Values)
@@ -51,11 +68,13 @@ public class ItemDatabase : MonoBehaviour {
 		throw new KeyNotFoundException("'" + name + "' was not found in ItemDatabase");
 	}
 
-		
-	// Reads in the JSON object from the destination 'Assets/'filename.
-	// Every object in JSON file will be maps to an Item object.
-	// The key value of the return object matches the value stored
-	// in the _ID attribute.
+
+	/* InvokeDatabase()
+	 *  Reads in the JSON object from the destination 'Assets/' filename.
+	 *  Every object in JSON file will be mapped to an Item object.
+	 *  The key value of the return object matches the value stored
+	 *  in the _ID attribute.
+	 */
 	private Dictionary<int, Item> InvokeDatabase(string filename) {
 		
 		Item item;
@@ -87,8 +106,12 @@ public class ItemDatabase : MonoBehaviour {
 
 		// return database (redundant)
 		return database;
-	}
+	} // end : InvokeDatabase
 
+
+	/* Item
+	 *  Storage for item data loaded from the database
+	 */
 	public class Item {
 
 		public const int INVALID_ID = 0;
@@ -104,7 +127,7 @@ public class ItemDatabase : MonoBehaviour {
 		public Item() {
 			this.ID = INVALID_ID;
 		}
-
+			
 		public Item(int id, string name, string handle, string prefab, string description) {
 			this.ID = id;
 			this.Name = name;
@@ -112,9 +135,10 @@ public class ItemDatabase : MonoBehaviour {
 			this.Prefab = prefab;
 			this.Description = description;
 		}
+			
 
 		public bool isValid() { return this.ID != INVALID_ID; }
-	}
-}
+	} // end : Item
+} // end : ItemDatabase
 
 
