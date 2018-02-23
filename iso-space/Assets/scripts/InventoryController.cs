@@ -5,6 +5,11 @@ using UnityEditor;
 
 using Item = ItemDatabase.Item;
 
+/* InventoryController
+ *  Add this to any of the existing gameObjects.
+ *  You must then enter the game object's name in
+ *  in the ItemController's INVENTORY_NAME.
+ */
 public class InventoryController : MonoBehaviour {
 
 	private const string PREFAB_PATH = "Assets/Prefabs/";
@@ -140,7 +145,6 @@ public class InventoryController : MonoBehaviour {
 	 *  throws System.ArgumentException
 	 */
 	private void AddNewStack(Item item) {
-		System.ArgumentException ex;
 		TupleItem newTuple = new TupleItem();
 		newTuple.count = 1;
 		newTuple.data = item;

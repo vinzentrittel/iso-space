@@ -13,12 +13,11 @@ using Item = ItemDatabase.Item;
  *  The item must have a BoxCollider attached
  */
 public class ItemController : MonoBehaviour {
-
-	private const string INVENTORY_NAME = "Inventory";
+	
 	private const string PLAYER_NAME = "Player";
-
 	private Item item;
 	private InventoryController inventory;
+
 
 #if COLLECT_ON_KEYPRESS
 	[Tooltip("Key binding to collect this item")]
@@ -26,8 +25,6 @@ public class ItemController : MonoBehaviour {
 #endif
 	[Tooltip("Fetch the object data by it's database id")]
 	public int itemID = Item.INVALID_ID;
-	[Tooltip("Fetch the object data by it's database name or handle identifier")]
-	public string itemName;
 
 
 	// Use this for initialization
@@ -44,11 +41,9 @@ public class ItemController : MonoBehaviour {
 		colliderInfo = GetComponent<BoxCollider>();
 		colliderInfo.isTrigger = true;
 
-		// get current inventory controller
-		inventory = GameObject.Find(INVENTORY_NAME)
-			.GetComponent<InventoryController>();
+		inventory  = FindObjectOfType(typeof(InventoryController)) as InventoryController;
 		if(inventory == null)
-			Debug.LogErrorFormat("Cannot find inventory GameObject '{0}' in scene.", INVENTORY_NAME);
+			Debug.LogError("Cannot find InventoryController in scene.");
 	}
 
 
@@ -75,21 +70,12 @@ public class ItemController : MonoBehaviour {
 		// first try fetching by set id
 		try {
 			item = ItemDatabase.FetchItemById(itemID);
+			return item;
 		} catch (KeyNotFoundException) {
-			// if ID is not valid, try fetching by set name
-			try {
-				item = ItemDatabase.FetchItemByName(itemName);
-			} catch (KeyNotFoundException) {
-				// if name is invalid, create empy
-				item = new Item();
-
-				// Log exeption
-				Debug.LogFormat("ItemController: Invalid item identifiers '{0}'!", gameObject.name); 
-				Debug.LogFormat("Item ID {0} not found in Database.", itemID);
-				Debug.LogFormat("Item name '{0}' not found in Database.", itemName);
-			}
+			// Log exeption
+			Debug.LogFormat("ItemController: Item ID {0} not found in Database.", itemID);
+			item = new Item();
+			return item;
 		}
-
-		return item;
 	}
 }
