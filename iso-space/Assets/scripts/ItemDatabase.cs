@@ -31,9 +31,12 @@ public class ItemDatabase : MonoBehaviour {
 		database = InvokeDatabase(filename);
 
 		// load every prefab data to the database
-		foreach(Item item in database.Values) 
+		foreach(Item item in database.Values) {
 			ItemPrefabRegister.GetInstance().AddPrefab(item.Prefab);
+			ItemIconRegister.GetInstance().AddIcon(item.Handle);
+		}
 		success = ItemPrefabRegister.GetInstance().LoadPrefabs();
+		success &= ItemIconRegister.GetInstance().LoadIcons();
 		if(!success)
 			Debug.Log("Some item prefabs could not be loaded. See Error Log!");
 	} // end : Awake

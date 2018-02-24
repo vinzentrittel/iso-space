@@ -12,10 +12,13 @@ public class ItemContainerController : MonoBehaviour {
 	private List<Item> contentIds;
 	private InventoryController inventory;
 
-	[Tooltip("Key binding to collect this item")]
+	[Tooltip("Key binding to collect contained items")]
 	public /*const*/ KeyCode actionKey = KeyCode.E;
 
 
+	/* Item
+	 *  Data structure, to manage the children items
+	 */
 	struct Item { public int id; public GameObject obj; }
 
 
@@ -38,7 +41,7 @@ public class ItemContainerController : MonoBehaviour {
 				contentIds.Add(itemTuple);
 			}
 		}
-	}
+	} // end : Start
 	
 
 	/* OnCollisionStap()
@@ -61,7 +64,7 @@ public class ItemContainerController : MonoBehaviour {
 					if(inventory.AddToInventory(item))
 						RemoveItem(i--);				
 				}
-	}
+	} // end : OnCollisionStay
 
 
 	/* RemoveItem

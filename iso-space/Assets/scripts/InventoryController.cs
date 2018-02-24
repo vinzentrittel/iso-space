@@ -21,6 +21,9 @@ public class InventoryController : MonoBehaviour {
 	[Tooltip("Number of instances allowed in the inventory")]
 	public int stackSize = 5;
 
+	[Tooltip("Reference to canvas, containing the feed. Must have component FeedController.")]
+	public GameObject feed;
+
 	struct TupleItem {
 		public int	count;
 		public Item data;
@@ -62,6 +65,9 @@ public class InventoryController : MonoBehaviour {
 			// open new stack
 			AddNewStack(item);
 		}
+
+		// Notify children
+		BroadcastMessage("AddItem", item.ID);
 
 		// item was stacked
 		return true;
