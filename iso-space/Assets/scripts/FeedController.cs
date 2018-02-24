@@ -9,7 +9,7 @@ using UnityEngine.UI;
  *  
  *  Requirements:
  *  - gameObject must be child to inventory with InventoryController
- *  - feedLable must have a VerticalLayoutGroup component attached
+ *  - feedLable must have some LayoutGroup component attached
  *  - feedLabel must follow a structures, as follows :
  *    feedLabel : Label
  *      - slotname : Label
@@ -40,7 +40,7 @@ public class FeedController : MonoBehaviour {
 
 
 	void Start () {
-		VerticalLayoutGroup layout;
+		LayoutGroup layout;
 		SlotTuple data;
 
 		hasChanged = false;
@@ -57,10 +57,10 @@ public class FeedController : MonoBehaviour {
 		HideAll(0);
 
 		// check for attached grid layout
-		layout = feedLabel.GetComponent<VerticalLayoutGroup>() as VerticalLayoutGroup;
+		layout = feedLabel.GetComponent<LayoutGroup>() as LayoutGroup;
 		if(layout == null)
 			Debug.LogErrorFormat(
-				"No VerticalGridLayout component attached to '{0}'.",
+				"No LayoutGroup component attached to '{0}'.",
 				feedLabel
 			);
 	} // end : Start
