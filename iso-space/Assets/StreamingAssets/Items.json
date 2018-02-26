@@ -1,0 +1,37 @@
+[
+  {
+    "id" : 1,
+    "name" : "Happy Note",
+    "handle" : "note1",
+    "prefab" : "Note",
+    "descr" : "We left the deck. You must find us. Or else ... we are lost"
+  },
+  {
+    "id" : 2,
+    "name" : "Key to The Gally",
+    "handle" : "key1",
+    "prefab" : "Key",
+    "descr" : "This key unlocks the gally"
+  },
+  {
+    "id" : 3,
+    "name" : "Captain's ID",
+    "handle" : "idcard1",
+    "prefab" : "IDCard",
+    "descr" : "The captains ID. I wonder if I can use it"
+  },
+  {
+    "id" : 4,
+    "name" : "Cable A/B",
+    "handle" : "cable1",
+    "prefab" : "Cable",
+    "descr" : "Standard cable from A socket to B socket"
+  }, 
+  {
+    "id" : 5,
+    "name" : "Test Item",
+    "handle" : "",
+    "prefab" : "",
+    "descr" : "lazy description"
+  }
+]
