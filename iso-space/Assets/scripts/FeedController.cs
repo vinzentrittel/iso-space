@@ -23,14 +23,21 @@ public class FeedController : MonoBehaviour {
 
 	private List<SlotTuple> slots;
 	private Queue<InfoTuple> lastItems;
+	private Outline slotSelect;
 	private bool hasChanged;
 	private double lastUpdate;
 	private float alphaMenu;
+	private float alphaSlot;
 
 	[Tooltip("Drop a reference to the label, you want the feed displayed on.")]
 	public GameObject feedLabel;
-	[Tooltip("Set how long the feed will be displayed")]
-	public float fadeAwayTime = 1.0f;
+	[Tooltip("Set how long the feed will be displayed.")]
+	public float fadeAwayFeed = 1.0f;
+	[Tooltip("Set how long the 'slot updated'-highlight will be displayed.")]
+	public float fadeAwaySlot = 1.0f;
+	[Tooltip("Set color of the slot highlight.")]
+	public Color selectionColor;
+
 
 	struct InfoTuple {
 		public Sprite sprite;
@@ -59,6 +66,11 @@ public class FeedController : MonoBehaviour {
 			slots.Add(data);
 		}
 
+		// reference highlight
+		selectionColor.a = 0.0f;
+		slotSelect = slots[0].obj.GetComponent<Outline>();
+		slotSelect.effectColor = selectionColor;
+
 		// hide all UI elements for now (there's nothing to see yet)
 		HideAll(alphaMenu);
 
@@ -86,18 +98,22 @@ public class FeedController : MonoBehaviour {
 				reverseIndex--;
 			}
 
-			// display non-empty feed
-			//Unhide();
-
-			alphaMenu = 1.0f;
 			lastUpdate = Time.realtimeSinceStartup;
+			alphaMenu = alphaSlot = 1.0f;
 			hasChanged = false;
 		}
 
 		// auto hide menu
 		if(alphaMenu > 0.0f) {
-			alphaMenu = smoothInterp(Time.realtimeSinceStartup - lastUpdate, 0.0f, fadeAwayTime);
+			alphaMenu = smoothInterp((float) (Time.realtimeSinceStartup - lastUpdate), 0.0f, fadeAwayFeed);
 			Hide(alphaMenu);
+		}
+
+		// higlight slot marker
+		if(alphaSlot > 0.0f) {
+			alphaSlot = smoothInterp((float) (Time.realtimeSinceStartup - lastUpdate), 0.0f, fadeAwaySlot);
+			selectionColor.a = alphaSlot;
+			slotSelect.effectColor = selectionColor;
 		}
 	} // end : Update
 
@@ -142,14 +158,14 @@ public class FeedController : MonoBehaviour {
 	 *  stores image and text output information for item id in
 	 *  a structure
 	 */
-	private InfoTuple BakeInfo(int id) {
+	private static InfoTuple BakeInfo(int id, string eventDescr = " added to inventory.") {
 		InfoTuple info;
 		ItemDatabase.Item item;
 
 		// fetch data
 		item = ItemDatabase.FetchItemById(id);
 
-		info.descr = item.Name + " added to inventory.";
+		info.descr = item.Name + eventDescr;
 		info.sprite = ItemIconRegister.GetInstance().GetIcon(item.Handle);
 
 		return info;
@@ -189,17 +205,26 @@ public class FeedController : MonoBehaviour {
 	} // end : SetSlotAlpha
 
 
-	private float smoothInterp(double t, float start = 0.0f, float end = 1.0f) {
+	/* smoothInterp()
+	 *  smoothens out an interpolation from domain [start,end] to interval [0,1] with
+	 *  time parameter t. The interpolation will be smoothed out by the cosine in
+	 *  the domain [0,pi] and projected on [0,1], instead of [-1,1].
+	 *  Hence note, that t = start produces 1 and t = end produce 0 as a result.
+	 */
+	private static float smoothInterp(float t, float start = 0.0f, float end = 1.0f) {
+		float normalizedParam;
+		float result;
+
 		if(t < start) return 1.0f;
 		else if(t > end) return 0.0f;
 
 		// [0,pi] -> [1,-1] => [start,end] -> [0,1]
-		float normT = (float) t * Mathf.PI / (end - start);
+		normalizedParam = (float) t * Mathf.PI / (end - start);
 
 		// damp
-		float result = Mathf.Cos(normT);
+		result = Mathf.Cos(normalizedParam);
 
 		// target interval [0,1]
 		return result * 0.5f + 0.5f;
-	}
+	} // end : smoothInterp
 } // end : FeedController
