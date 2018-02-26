@@ -47,13 +47,13 @@ public class ItemContainerController : MonoBehaviour {
 	/* OnCollisionStap()
 	 *  A rigidbody must be attached to this game object
 	 */
-	void  OnCollisionStay(Collision other) {
+	public void OnTriggerStay(Collider other) {
 		
 		int id;
 		ItemDatabase.Item item;
 
 		// check on player collision for keystrokes
-		if(other.collider.gameObject.name == PLAYER_NAME) 
+		if(other.gameObject.name == PLAYER_NAME) 
 			if(Input.GetKeyDown(actionKey))
 				// collect all items
 				for(int i = 0; i < contentIds.Count; i++) {
