@@ -23,9 +23,9 @@ public class FeedController : MonoBehaviour {
 
 	private List<SlotTuple> slots;
 	private Queue<InfoTuple> lastItems;
+	private Queue<InfoTuple> pendingItems;
 	private Outline slotSelect;
-	private bool hasChanged;
-	private double lastUpdate;
+	private double latestUpdate;
 	private float alphaMenu;
 	private float alphaSlot;
 
@@ -55,10 +55,11 @@ public class FeedController : MonoBehaviour {
 		SlotTuple data;
 
 		alphaMenu = 0.0f;
-		lastUpdate = Time.realtimeSinceStartup;
-		hasChanged = false;
+		alphaSlot = 0.0f;
+		latestUpdate = Time.realtimeSinceStartup;
 		slots = new List<SlotTuple>();
 		lastItems = new Queue<InfoTuple>();
+		pendingItems = new Queue<InfoTuple>();
 
 		// get object, image, and text references to all slots
 		foreach(Transform child in feedLabel.transform) {
@@ -88,7 +89,10 @@ public class FeedController : MonoBehaviour {
 		int reverseIndex;
 
 		// check for preceding status updates
-		if(hasChanged) {
+		if(pendingItems.Count != 0 && alphaSlot == 0.0f) {
+			// push from pending to feed
+			displayUpdate();
+
 			// print most recent statuses to available slots
 			// newest first, hence reverseIndex
 			reverseIndex = lastItems.Count - 1;
@@ -98,20 +102,22 @@ public class FeedController : MonoBehaviour {
 				reverseIndex--;
 			}
 
-			lastUpdate = Time.realtimeSinceStartup;
+			// start feed animations
+			latestUpdate = Time.realtimeSinceStartup;
 			alphaMenu = alphaSlot = 1.0f;
-			hasChanged = false;
 		}
 
 		// auto hide menu
 		if(alphaMenu > 0.0f) {
-			alphaMenu = smoothInterp((float) (Time.realtimeSinceStartup - lastUpdate), 0.0f, fadeAwayFeed);
+			// make it more transparent, step by step
+			alphaMenu = smoothInterp((float) (Time.realtimeSinceStartup - latestUpdate), 0.0f, fadeAwayFeed);
 			Hide(alphaMenu);
 		}
 
 		// higlight slot marker
 		if(alphaSlot > 0.0f) {
-			alphaSlot = smoothInterp((float) (Time.realtimeSinceStartup - lastUpdate), 0.0f, fadeAwaySlot);
+			// make it more transparent step by step
+			alphaSlot = smoothInterp((float) (Time.realtimeSinceStartup - latestUpdate), 0.0f, fadeAwaySlot);
 			selectionColor.a = alphaSlot;
 			slotSelect.effectColor = selectionColor;
 		}
@@ -119,22 +125,52 @@ public class FeedController : MonoBehaviour {
 
 
 	/* AddItem()
-	 *  saves relevant item information.
-	 *  If number of updates exeeds the number of slots,
-	 *  the oldest message will be deleted
+	 *  Triggers feed to display the new item
 	 */
 	public void AddItem(int id) {
-		// get relevant information to structure
-		InfoTuple info = BakeInfo(id);
+		AddUpdate(id, " was added to inventory");
+	} // end : AddItem
 
+
+	/* RemoveItem()
+	 *  Triggers feed to display item removal
+	 */
+	public void RemoveItem(int id) {
+		AddUpdate(id, " was removed from the inventory");
+	} // end : RemoveItem
+
+
+	/* FullStack()
+	 *  Triggers feed to display a full item stack
+	 */
+	public void FullStack(int id) {
+		AddUpdate(id, " could not be stored.\nThere is no more space for this item");
+	} // end : FullStack
+
+
+	/* AddUpdate()
+	 *  Adds a new item to pending, to be displayed in the feed
+	 */
+	private void AddUpdate(int id, string eventDescr) {
+		// get relevant information to structure
+		InfoTuple info = BakeInfo(id, eventDescr);
+
+		// set event pending for displaying
+		pendingItems.Enqueue(info);
+	} // end : AddUpdate
+
+
+	/* displayUpdate()
+	 *  sends oldest pending update to be displayed in the feed
+	 */
+	private void displayUpdate() {
+		InfoTuple info = pendingItems.Dequeue();
 		lastItems.Enqueue(info);
 
-		// remove oldest message
+		// check for feed overflow
 		if(lastItems.Count > slots.Count)
 			lastItems.Dequeue();
-
-		hasChanged = true;
-	} // end : AddItem
+	} // end : displayUpdate
 
 
 	/* BakeSlot()
@@ -158,7 +194,7 @@ public class FeedController : MonoBehaviour {
 	 *  stores image and text output information for item id in
 	 *  a structure
 	 */
-	private static InfoTuple BakeInfo(int id, string eventDescr = " added to inventory.") {
+	private static InfoTuple BakeInfo(int id, string eventDescr = " was added to inventory.") {
 		InfoTuple info;
 		ItemDatabase.Item item;
 

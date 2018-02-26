@@ -56,6 +56,7 @@ public class InventoryController : MonoBehaviour {
 			if(!AddToStack(item.ID)) {
 				// TODO: show in UI
 				Debug.LogFormat("You cannot store more than {0} {1}s in this inventory", stackSize, item.Name);
+				BroadcastMessage("FullStack", item.ID, SendMessageOptions.DontRequireReceiver);
 				return false;
 			}
 		} else {
