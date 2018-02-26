@@ -24,9 +24,13 @@ public class FeedController : MonoBehaviour {
 	private List<SlotTuple> slots;
 	private Queue<InfoTuple> lastItems;
 	private bool hasChanged;
+	private double lastUpdate;
+	private float alphaMenu;
 
 	[Tooltip("Drop a reference to the label, you want the feed displayed on.")]
 	public GameObject feedLabel;
+	[Tooltip("Set how long the feed will be displayed")]
+	public float fadeAwayTime = 1.0f;
 
 	struct InfoTuple {
 		public Sprite sprite;
@@ -43,6 +47,8 @@ public class FeedController : MonoBehaviour {
 		LayoutGroup layout;
 		SlotTuple data;
 
+		alphaMenu = 0.0f;
+		lastUpdate = Time.realtimeSinceStartup;
 		hasChanged = false;
 		slots = new List<SlotTuple>();
 		lastItems = new Queue<InfoTuple>();
@@ -54,7 +60,7 @@ public class FeedController : MonoBehaviour {
 		}
 
 		// hide all UI elements for now (there's nothing to see yet)
-		HideAll(0);
+		HideAll(alphaMenu);
 
 		// check for attached grid layout
 		layout = feedLabel.GetComponent<LayoutGroup>() as LayoutGroup;
@@ -81,9 +87,17 @@ public class FeedController : MonoBehaviour {
 			}
 
 			// display non-empty feed
-			Unhide();
+			//Unhide();
 
+			alphaMenu = 1.0f;
+			lastUpdate = Time.realtimeSinceStartup;
 			hasChanged = false;
+		}
+
+		// auto hide menu
+		if(alphaMenu > 0.0f) {
+			alphaMenu = smoothInterp(Time.realtimeSinceStartup - lastUpdate, 0.0f, fadeAwayTime);
+			Hide(alphaMenu);
 		}
 	} // end : Update
 
@@ -173,4 +187,19 @@ public class FeedController : MonoBehaviour {
 		foreach(CanvasRenderer renderer in slots[index].obj.GetComponentsInChildren<CanvasRenderer>())
 			renderer.SetAlpha(alpha);
 	} // end : SetSlotAlpha
+
+
+	private float smoothInterp(double t, float start = 0.0f, float end = 1.0f) {
+		if(t < start) return 1.0f;
+		else if(t > end) return 0.0f;
+
+		// [0,pi] -> [1,-1] => [start,end] -> [0,1]
+		float normT = (float) t * Mathf.PI / (end - start);
+
+		// damp
+		float result = Mathf.Cos(normT);
+
+		// target interval [0,1]
+		return result * 0.5f + 0.5f;
+	}
 } // end : FeedController
