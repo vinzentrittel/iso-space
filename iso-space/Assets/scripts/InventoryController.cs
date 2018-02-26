@@ -54,8 +54,7 @@ public class InventoryController : MonoBehaviour {
 		if(dictItems.ContainsKey(item.ID)) {
 			// try to add on top of stack
 			if(!AddToStack(item.ID)) {
-				// TODO: show in UI
-				Debug.LogFormat("You cannot store more than {0} {1}s in this inventory", stackSize, item.Name);
+				// notify children about full stack
 				BroadcastMessage("FullStack", item.ID, SendMessageOptions.DontRequireReceiver);
 				return false;
 			}
@@ -110,12 +109,26 @@ public class InventoryController : MonoBehaviour {
 				dictItems.Remove(id);
 			
 			// item successfully popped
+			// notify children
+			BroadcastMessage("RemoveItem", id, SendMessageOptions.DontRequireReceiver);
 			return true;
 		} else
 			// no more items of id
 			return false;
 	} // end : RemoveFromInventory
 
+
+	/* HasItem()
+	 *  returns true, if at least one instance of item is in your inventory
+	 */
+	public bool HasItem(int id) {
+		if(dictItems.ContainsKey(id))
+			return true;
+
+		// item not in inventory, notify children
+		BroadcastMessage("MissingItem", id, SendMessageOptions.DontRequireReceiver);
+		return false;
+	}
 
 	/********** Helper Functions *********/
 	//

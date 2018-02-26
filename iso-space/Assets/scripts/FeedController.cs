@@ -148,6 +148,14 @@ public class FeedController : MonoBehaviour {
 	} // end : FullStack
 
 
+	/* MissingItem()
+	 *  Triggers feed to display an item is not present in the inventory
+	 */
+	public void MissingItem(int id) {
+		AddUpdate(id, " is needed. Sorry!\nThat is not in your inventory.");
+	}
+
+
 	/* AddUpdate()
 	 *  Adds a new item to pending, to be displayed in the feed
 	 */
