@@ -30,7 +30,7 @@ public class ItemFeed : MonoBehaviour {
 	private float alphaSlot;
 
 	[Tooltip("Drop a reference to the label, you want the feed displayed on.")]
-	public GameObject feedLabel;
+	public GameObject feedPanel;
 	[Tooltip("Set how long the feed will be displayed.")]
 	public float fadeAwayFeed = 1.0f;
 	[Tooltip("Set how long the 'slot updated'-highlight will be displayed.")]
@@ -59,7 +59,7 @@ public class ItemFeed : MonoBehaviour {
 		pendingItems = new Queue<InfoTuple>();
 
 		// get object, image, and text references to all slots
-		foreach(Transform child in feedLabel.transform) {
+		foreach(Transform child in feedPanel.transform) {
 			SlotTuple data = BakeSlot(child.gameObject);
 			slots.Add(data);
 		}
@@ -72,10 +72,10 @@ public class ItemFeed : MonoBehaviour {
 		// hide all UI elements for now (there's nothing to see yet)
 		HideAll(alphaMenu);
 
-		if(feedLabel.GetComponent<LayoutGroup>() == null)
+		if(feedPanel.GetComponent<LayoutGroup>() == null)
 			Debug.LogErrorFormat(
 				"No LayoutGroup component attached to '{0}'.",
-				feedLabel
+				feedPanel
 			);
 	} // end : Start
 	
