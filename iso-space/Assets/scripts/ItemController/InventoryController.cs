@@ -96,6 +96,20 @@ public class InventoryController : MonoBehaviour {
 	 * 
 	 *  returns false, if no items id are left in inventory
 	 */
+	public bool RemoveFromInventory(int id) {
+		Item dummy;
+		return RemoveFromInventory(id, out dummy);
+	} // end : RemoveFromInventory
+
+
+	/* RemoveFromInventory()
+	 *  Removes the fetched item from the inventory or stack and
+	 *  returns its data via the 'item' reference.
+	 *  If the last item is removed from stack, the dictionary
+	 *  entry is dumped.
+	 * 
+	 *  returns false, if no items id are left in inventory
+	 */
 	public bool RemoveFromInventory(int id, out Item item) {
 		
 		// find item
