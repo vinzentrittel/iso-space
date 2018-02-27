@@ -16,7 +16,7 @@ public class StoreItem : MonoBehaviour {
 	
 	private const string PLAYER_NAME = "Player";
 	private Item item;
-	private InventoryController inventory;
+	private Inventory inventory;
 
 
 #if COLLECT_ON_KEYPRESS
@@ -35,7 +35,7 @@ public class StoreItem : MonoBehaviour {
 		// set name
 		gameObject.name = item.Name;
 
-		inventory  = FindObjectOfType(typeof(InventoryController)) as InventoryController;
+		inventory  = FindObjectOfType(typeof(Inventory)) as Inventory;
 		if(inventory == null)
 			Debug.LogError("Cannot find InventoryController in scene.");
 	}

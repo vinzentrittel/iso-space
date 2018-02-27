@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemTrigger : MonoBehaviour {
+public class TriggerItem : MonoBehaviour {
 	
 	void OnTriggerStay(Collider other) {
 		MonoBehaviour parent = null;
@@ -10,14 +10,14 @@ public class ItemTrigger : MonoBehaviour {
 		if(parent == null)
 			parent = GetComponentInParent<MoveItem>() as MonoBehaviour;
 		if(parent == null)
-			parent = GetComponentInParent<ItemContainerController>() as MonoBehaviour;
+			parent = GetComponentInParent<ItemContainer>() as MonoBehaviour;
 
 		if(parent != null)
 			if(parent is MoveItem) {
 				(parent as MoveItem).OnTriggerStay(other);
 				return;
-			} else if(parent is ItemContainerController) {
-				(parent as ItemContainerController).OnTriggerStay(other);
+			} else if(parent is ItemContainer) {
+				(parent as ItemContainer).OnTriggerStay(other);
 				return;
 			}
 

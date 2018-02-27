@@ -19,7 +19,7 @@ using UnityEngine.UI;
  *        - ...
  *      - ...
  */
-public class FeedController : MonoBehaviour {
+public class ItemFeed : MonoBehaviour {
 
 	private List<SlotTuple> slots;
 	private Queue<InfoTuple> lastItems;
@@ -51,9 +51,6 @@ public class FeedController : MonoBehaviour {
 
 
 	void Start () {
-		LayoutGroup layout;
-		SlotTuple data;
-
 		alphaMenu = 0.0f;
 		alphaSlot = 0.0f;
 		latestUpdate = Time.realtimeSinceStartup;
@@ -63,7 +60,7 @@ public class FeedController : MonoBehaviour {
 
 		// get object, image, and text references to all slots
 		foreach(Transform child in feedLabel.transform) {
-			data = BakeSlot(child.gameObject);
+			SlotTuple data = BakeSlot(child.gameObject);
 			slots.Add(data);
 		}
 
@@ -75,9 +72,7 @@ public class FeedController : MonoBehaviour {
 		// hide all UI elements for now (there's nothing to see yet)
 		HideAll(alphaMenu);
 
-		// check for attached grid layout
-		layout = feedLabel.GetComponent<LayoutGroup>() as LayoutGroup;
-		if(layout == null)
+		if(feedLabel.GetComponent<LayoutGroup>() == null)
 			Debug.LogErrorFormat(
 				"No LayoutGroup component attached to '{0}'.",
 				feedLabel
@@ -86,25 +81,10 @@ public class FeedController : MonoBehaviour {
 	
 
 	void Update () {
-		int reverseIndex;
-
 		// check for preceding status updates
 		if(pendingItems.Count != 0 && alphaSlot == 0.0f) {
-			// push from pending to feed
-			displayUpdate();
-
-			// print most recent statuses to available slots
-			// newest first, hence reverseIndex
-			reverseIndex = lastItems.Count - 1;
-			foreach(InfoTuple info in lastItems) {
-				slots[reverseIndex].img.sprite = info.sprite;
-				slots[reverseIndex].info.text = info.descr;
-				reverseIndex--;
-			}
-
-			// start feed animations
-			latestUpdate = Time.realtimeSinceStartup;
-			alphaMenu = alphaSlot = 1.0f;
+			AddPending();
+			UpdateDisplay();
 		}
 
 		// auto hide menu
@@ -122,6 +102,21 @@ public class FeedController : MonoBehaviour {
 			slotSelect.effectColor = selectionColor;
 		}
 	} // end : Update
+
+
+	private void UpdateDisplay() {
+		
+		int reverseIndex = lastItems.Count - 1;
+		foreach(InfoTuple info in lastItems) {
+			slots[reverseIndex].img.sprite = info.sprite;
+			slots[reverseIndex].info.text = info.descr;
+			reverseIndex--;
+		}
+
+		// start feed animations
+		alphaMenu = alphaSlot = 1.0f;
+		latestUpdate = Time.realtimeSinceStartup;
+	} // end : UpdateDisplay
 
 
 	/* AddItem()
@@ -168,17 +163,17 @@ public class FeedController : MonoBehaviour {
 	} // end : AddUpdate
 
 
-	/* displayUpdate()
+	/* AddPending()
 	 *  sends oldest pending update to be displayed in the feed
 	 */
-	private void displayUpdate() {
+	private void AddPending() {
 		InfoTuple info = pendingItems.Dequeue();
 		lastItems.Enqueue(info);
 
 		// check for feed overflow
 		if(lastItems.Count > slots.Count)
 			lastItems.Dequeue();
-	} // end : displayUpdate
+	} // end : AddPending
 
 
 	/* BakeSlot()

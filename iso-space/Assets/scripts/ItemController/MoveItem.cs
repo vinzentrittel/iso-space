@@ -64,21 +64,13 @@ public class MoveItem : MonoBehaviour {
 	} // end : OnTriggerStay
 
 
-	/* Pickup()
-	 *  sets the item into the local transform of the player with a
-	 *  little offset
-	 */
 	private void Pickup() {
-		Vector3 position;
-
 		// make relative to player
 		gameObject.transform.parent = player.transform;
 
-		// set offset
-		position = player.transform.forward * 0.7f + new Vector3(0, 1, 0);
-
 		// apply player position
-		gameObject.transform.position = player.transform.position + position;
+		Vector3 offset = player.transform.forward * 0.7f + new Vector3(0, 1, 0);
+		gameObject.transform.position = player.transform.position + offset;
 		gameObject.transform.forward = player.transform.forward;
 	} // end : Pickup
 
