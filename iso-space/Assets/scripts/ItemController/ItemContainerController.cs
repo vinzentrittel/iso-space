@@ -33,7 +33,7 @@ public class ItemContainerController : MonoBehaviour {
 		foreach(Transform child in transform) {
 			GameObject objChild = child.gameObject;
 			// find game objects with ItemController
-			foreach(ItemController item in objChild.GetComponents<ItemController>()) {
+			foreach(StoreItem item in objChild.GetComponents<StoreItem>()) {
 				itemTuple = new Item();
 				itemTuple.id = item.itemID;
 				itemTuple.obj = item.gameObject;

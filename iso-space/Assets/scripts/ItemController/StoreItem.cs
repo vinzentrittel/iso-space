@@ -12,7 +12,7 @@ using Item = ItemDatabase.Item;
  *  Attach this script to every collectible item.
  *  The item must have a BoxCollider attached
  */
-public class ItemController : MonoBehaviour {
+public class StoreItem : MonoBehaviour {
 	
 	private const string PLAYER_NAME = "Player";
 	private Item item;
@@ -29,17 +29,11 @@ public class ItemController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		BoxCollider colliderInfo;
-
 		// get the corresponding item stats from database
 		item = FetchItem();
 
 		// set name
 		gameObject.name = item.Name;
-
-		// collect collision information
-		colliderInfo = GetComponent<BoxCollider>();
-		colliderInfo.isTrigger = true;
 
 		inventory  = FindObjectOfType(typeof(InventoryController)) as InventoryController;
 		if(inventory == null)
@@ -49,9 +43,9 @@ public class ItemController : MonoBehaviour {
 
 	// Gives player chance to collect items, when in touch
 	// with it
-	void OnTriggerStay(Collider other) {
+	public void OnTriggerStay(Collider other) {
 #if COLLECT_ON_KEYPRESS
-		if(Input.GetKeyDown(actionKey) && other.gameObject.name == PLAYER_NAME)
+		if(Input.GetKeyDown(actionKey) && other.CompareTag(PLAYER_NAME))
 #else
 		if(other.gameObject.name == "Player")
 #endif

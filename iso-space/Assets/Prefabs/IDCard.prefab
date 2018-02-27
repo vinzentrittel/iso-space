@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33769193390311160}
   - component: {fileID: 65098088131361090}
   - component: {fileID: 23638054294389852}
-  - component: {fileID: 114821583685994996}
+  - component: {fileID: 114609825655373542}
   m_Layer: 0
   m_Name: IDCard
   m_TagString: Untagged
@@ -96,7 +96,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114821583685994996
+--- !u!114 &114609825655373542
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -104,7 +104,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1303831439924464}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a6ec675be6682a46a7cdc513b378a2e, type: 3}
+  m_Script: {fileID: 11500000, guid: 500d22f44b1b42e4894ca2fcc5ebafae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   actionKey: 101

@@ -7,17 +7,23 @@ public class MoveItem : MonoBehaviour {
 	[Tooltip("Key binding to pick up item")]
 	public KeyCode actionKey = KeyCode.E;
 
-	private bool isMoving, isDumpable, shouldMove;
+	private string PLAYER_TAG = "Player";
+
+	private bool isMoving, isDumpable;
+	private bool storeFirst;
 	private GameObject player;
 	private Transform parent;
+	private StoreItem storeItem;
 
 
 	void Start () {
 		isMoving = false;
 		isDumpable = false;
-		shouldMove = false;
 
 		parent = gameObject.transform.parent;
+
+		storeItem = gameObject.GetComponent<StoreItem>() as StoreItem;
+		storeFirst = storeItem != null;
 	} // end : start
 	
 
@@ -40,16 +46,22 @@ public class MoveItem : MonoBehaviour {
 		}
 	} // end : Update
 
+
 	public void OnTriggerStay(Collider other) {
-		if(other.CompareTag("Player")
-			&& Input.GetKeyDown(actionKey)) {
-			if(!isMoving) {
+		if(other.CompareTag(PLAYER_TAG)) {
+			// store the player object for clipping the item
+			// to the it, later on
+			player = other.gameObject;
+
+			// check if component should be stored
+			if(storeFirst)
+				return;
+
+			if(Input.GetKeyDown(actionKey))
 				// prepare for moving in update()
-				isMoving = true;
-				player = other.gameObject;
-			}
+				isMoving = true;				
 		}
-	}
+	} // end : OnTriggerStay
 
 
 	/* Pickup()
