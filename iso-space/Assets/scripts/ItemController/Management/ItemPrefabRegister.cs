@@ -9,7 +9,7 @@ using UnityEditor;
  */
 public class ItemPrefabRegister {
 
-	private const string PREFAB_PATH = "Assets/Prefabs/";
+	public const string PREFAB_PATH = "Assets/Prefabs/Items/";
 
 	private static ItemPrefabRegister instance;				// for singleton
 	private static Dictionary<string, GameObject> prefabs;

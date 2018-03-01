@@ -12,7 +12,7 @@ using Item = ItemDatabase.Item;
  */
 public class Inventory : MonoBehaviour {
 
-	private const string PREFAB_PATH = "Assets/Prefabs/";
+	//private const string PREFAB_PATH = ItemPrefabRegister.PREFAB_PATH;
 	private const string PLAYER_NAME = "Player";
 
 	private Dictionary<int, TupleItem> dictItems;
