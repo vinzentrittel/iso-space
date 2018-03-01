@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Door : MonoBehaviour {
+public class Door : MonoBehaviour, TriggerObject.Action {
 
 	// Use this for initialization
 	void Start () {
@@ -19,5 +19,9 @@ public class Door : MonoBehaviour {
 		if (other.CompareTag("Player")){
 			Debug.Log ("Player Entered Gate");
 		}
+	}
+
+	public void execute() {
+		Debug.Log("Should open the door");
 	}
 }
