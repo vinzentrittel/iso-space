@@ -10,7 +10,7 @@ using Item = ItemDatabase.Item;
  *  You must then enter the game object's name in
  *  in the ItemController's INVENTORY_NAME.
  */
-public class InventoryController : MonoBehaviour {
+public class Inventory : MonoBehaviour {
 
 	private const string PREFAB_PATH = "Assets/Prefabs/";
 	private const string PLAYER_NAME = "Player";
@@ -50,16 +50,13 @@ public class InventoryController : MonoBehaviour {
 	 *          true,  in all other cases
 	 */
 	public bool AddToInventory(Item item) {		
-		// if an equal item is in this inventory
 		if(dictItems.ContainsKey(item.ID)) {
 			// try to add on top of stack
 			if(!AddToStack(item.ID)) {
-				// TODO: show in UI
-				Debug.LogFormat("You cannot store more than {0} {1}s in this inventory", stackSize, item.Name);
+				BroadcastMessage("FullStack", item.ID, SendMessageOptions.DontRequireReceiver);
 				return false;
 			}
 		} else {
-			// open new stack
 			AddNewStack(item);
 		}
 
@@ -96,6 +93,20 @@ public class InventoryController : MonoBehaviour {
 	 * 
 	 *  returns false, if no items id are left in inventory
 	 */
+	public bool RemoveFromInventory(int id) {
+		Item dummy;
+		return RemoveFromInventory(id, out dummy);
+	} // end : RemoveFromInventory
+
+
+	/* RemoveFromInventory()
+	 *  Removes the fetched item from the inventory or stack and
+	 *  returns its data via the 'item' reference.
+	 *  If the last item is removed from stack, the dictionary
+	 *  entry is dumped.
+	 * 
+	 *  returns false, if no items id are left in inventory
+	 */
 	public bool RemoveFromInventory(int id, out Item item) {
 		
 		// find item
@@ -109,12 +120,26 @@ public class InventoryController : MonoBehaviour {
 				dictItems.Remove(id);
 			
 			// item successfully popped
+			// notify children
+			BroadcastMessage("RemoveItem", id, SendMessageOptions.DontRequireReceiver);
 			return true;
 		} else
 			// no more items of id
 			return false;
 	} // end : RemoveFromInventory
 
+
+	/* HasItem()
+	 *  returns true, if at least one instance of item is in your inventory
+	 */
+	public bool HasItem(int id) {
+		if(dictItems.ContainsKey(id))
+			return true;
+
+		// item not in inventory, notify children
+		BroadcastMessage("MissingItem", id, SendMessageOptions.DontRequireReceiver);
+		return false;
+	}
 
 	/********** Helper Functions *********/
 	//

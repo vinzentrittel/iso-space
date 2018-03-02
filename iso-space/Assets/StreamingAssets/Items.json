@@ -26,12 +26,5 @@
     "handle" : "cable1",
     "prefab" : "Cable",
     "descr" : "Standard cable from A socket to B socket"
-  }, 
-  {
-    "id" : 5,
-    "name" : "Test Item",
-    "handle" : "",
-    "prefab" : "",
-    "descr" : "lazy description"
   }
 ]

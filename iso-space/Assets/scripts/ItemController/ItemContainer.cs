@@ -6,11 +6,11 @@ using UnityEngine;
  *  Attach this script to every container for collectible items.
  *  The item must have a Rigidbody attached
  */
-public class ItemContainerController : MonoBehaviour {
+public class ItemContainer : MonoBehaviour {
 
 	private const string PLAYER_NAME = "Player";
 	private List<Item> contentIds;
-	private InventoryController inventory;
+	private Inventory inventory;
 
 	[Tooltip("Key binding to collect contained items")]
 	public /*const*/ KeyCode actionKey = KeyCode.E;
@@ -23,37 +23,26 @@ public class ItemContainerController : MonoBehaviour {
 
 
 	void Start () {
-		Item itemTuple;
-
 		contentIds = new List<Item>();
-		inventory  = FindObjectOfType(typeof(InventoryController)) as InventoryController;
-
+		inventory  = FindObjectOfType(typeof(Inventory)) as Inventory;
 
 		// check for items in this container
-		foreach(Transform child in transform) {
-			GameObject objChild = child.gameObject;
-			// find game objects with ItemController
-			foreach(ItemController item in objChild.GetComponents<ItemController>()) {
-				itemTuple = new Item();
-				itemTuple.id = item.itemID;
-				itemTuple.obj = item.gameObject;
-
-				contentIds.Add(itemTuple);
-			}
-		}
+		foreach(Transform child in transform)
+			foreach(StoreItem item in child.GetComponents<StoreItem>())
+				AddItem(item);
 	} // end : Start
 	
 
 	/* OnCollisionStap()
 	 *  A rigidbody must be attached to this game object
 	 */
-	void  OnCollisionStay(Collision other) {
+	public void OnTriggerStay(Collider other) {
 		
 		int id;
 		ItemDatabase.Item item;
 
 		// check on player collision for keystrokes
-		if(other.collider.gameObject.name == PLAYER_NAME) 
+		if(other.gameObject.name == PLAYER_NAME) 
 			if(Input.GetKeyDown(actionKey))
 				// collect all items
 				for(int i = 0; i < contentIds.Count; i++) {
@@ -65,6 +54,17 @@ public class ItemContainerController : MonoBehaviour {
 						RemoveItem(i--);				
 				}
 	} // end : OnCollisionStay
+
+
+	/* AddItem()
+	 */
+	private void AddItem(StoreItem storeItem) {
+		Item itemTuple = new Item();
+		itemTuple.id = storeItem.itemID;
+		itemTuple.obj = storeItem.gameObject;
+
+		contentIds.Add(itemTuple);
+	} // end : AddItem
 
 
 	/* RemoveItem

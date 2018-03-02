@@ -80,36 +80,30 @@ public class ItemDatabase : MonoBehaviour {
 	 */
 	private Dictionary<int, Item> InvokeDatabase(string filename) {
 		
-		Item item;
-		JsonData itemData;
-		database = new Dictionary<int, Item>();
-
 		try {
-			// maps the whole Json structure to a generic object
-			itemData = JsonMapper.ToObject(File.ReadAllText(filename));
-
-			// map every object to an individual Item object, append the
-			// <id, item> pair to database
-			foreach(JsonData element in itemData) {
-				// map the current item
-				item = new Item(
-					(int)    element[_ID],
-					(string) element[_NAME],
-					(string) element[_HANDLE],
-					(string) element[_PREFAB],
-					(string) element[_DESCRIPTION]
-				);
-				database.Add(item.ID, item);
-			}
+			database = new Dictionary<int, Item>();
+			foreach(JsonData element in JsonMapper.ToObject(File.ReadAllText(filename)))
+				StoreItemData(element);
 		} catch (JsonException) {
 			Debug.LogErrorFormat("ItemDatabase could not be mapped. Check '{0}' for syntax errors", filename);
 		} catch (FileNotFoundException) {
 			Debug.LogErrorFormat("ItemDatabase could not be mapped. '{0}' does not exist", filename);
 		}
 
-		// return database (redundant)
 		return database;
 	} // end : InvokeDatabase
+
+
+	public void StoreItemData(JsonData data) {
+		Item item = new Item(
+			(int)    data[_ID],
+			(string) data[_NAME],
+			(string) data[_HANDLE],
+			(string) data[_PREFAB],
+			(string) data[_DESCRIPTION]
+		);
+		database.Add(item.ID, item);
+	} // end : StoreData
 
 
 	/* Item
