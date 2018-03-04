@@ -5,13 +5,12 @@ using UnityEngine;
 public class Switch : MonoBehaviour {
 
 	bool isInRange = false;
-	Collider entrance;
+	public Collider entrance;
 
 	// Use this for initialization
 	void Start () {
-		entrance = gameObject.GetComponentInParent<BoxCollider> ();
 		entrance.isTrigger = false;
-		Debug.Log (entrance.gameObject.name);
+		//Debug.Log (entrance.gameObject.name);
 	}
 	
 	// Update is called once per frame
