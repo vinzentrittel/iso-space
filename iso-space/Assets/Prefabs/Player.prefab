@@ -328,6 +328,7 @@ GameObject:
   - component: {fileID: 114828553096363604}
   - component: {fileID: 114231044663243276}
   - component: {fileID: 82905805657932862}
+  - component: {fileID: 114351422971835926}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -2919,6 +2920,25 @@ MonoBehaviour:
   m_MoveSpeedMultiplier: 1
   m_AnimSpeedMultiplier: 1
   m_GroundCheckDistance: 0.3
+--- !u!114 &114351422971835926
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1202841284163988}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b44a03cb262629d4f9bc7fcfcbffa8e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TransparentMaterial: {fileID: 2100000, guid: 4b83328f37f7b634b8730dd83910b2fa, type: 2}
+  FadeInTimeout: 0.6
+  FadeOutTimeout: 0.2
+  TargetTransparency: 0.3
+  DistanceToPlayer: 5
+  playerTransform: {fileID: 4312102108788778}
+  cameraTransform: {fileID: 0}
+  rayDirection: {x: 0, y: 0, z: 0}
 --- !u!114 &114396289519509924
 MonoBehaviour:
   m_ObjectHideFlags: 1
