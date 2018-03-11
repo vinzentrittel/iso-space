@@ -5,24 +5,26 @@ using UnityEngine;
 public class QuestItem : MonoBehaviour {
 
 	public string displayText = "pick up";
+	public TextMesh hoverText;
 
-	// Use this for initialization
 	void Start () {
-		Transform parent = transform.parent;
-		transform.localPosition = new Vector3(
+		hoverText.transform.localPosition = new Vector3(
 			0,
-			2 * parent.localScale.y,
+			2 * transform.localScale.y,
 			0);
 
-		TextMesh text = GetComponent<TextMesh>() as TextMesh;
-		text.alignment = TextAlignment.Center;
-		text.anchor = TextAnchor.LowerCenter;
-		text.fontSize = 100;
-		text.text = displayText;
+		hoverText.alignment = TextAlignment.Center;
+		hoverText.anchor = TextAnchor.LowerCenter;
+		hoverText.fontSize = 100;
+		hoverText.text = displayText;
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
-		transform.eulerAngles = new Vector3(0, 45, 0);
+		hoverText.transform.eulerAngles = new Vector3(0, 45, 0);
+	}
+
+	public void HideText() {
+		Renderer renderer = hoverText.gameObject.GetComponent<Renderer>() as Renderer;
+		renderer.enabled = false;
 	}
 }
