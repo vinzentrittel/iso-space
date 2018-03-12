@@ -4,24 +4,19 @@ using UnityEngine;
 
 public class Door : MonoBehaviour, TriggerObject.Action {
 
+	private Collider entrance;
+
 	// Use this for initialization
 	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
-	// Detecting when something pass the door
-	void OnTriggerEnter(Collider other){
-		if (other.CompareTag("Player")){
-			Debug.Log ("Player Entered Gate");
-		}
+		entrance = gameObject.GetComponentInParent<BoxCollider> ();
+		entrance.isTrigger = false;
 	}
 
 	public void execute() {
-		Debug.Log("Should open the door");
+		Open();
+	}
+
+	private void Open() {
+		entrance.isTrigger = true;
 	}
 }
