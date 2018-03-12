@@ -2,22 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Door : MonoBehaviour {
+public class Door : MonoBehaviour, TriggerObject.Action {
+
+	private Collider entrance;
 
 	// Use this for initialization
 	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+		entrance = gameObject.GetComponentInParent<BoxCollider> ();
+		entrance.isTrigger = false;
 	}
 
-	// Detecting when something pass the door
-	void OnTriggerEnter(Collider other){
-		if (other.CompareTag("Player")){
-			Debug.Log ("Player Entered Gate");
-		}
+	public void execute() {
+		Open();
+	}
+
+	private void Open() {
+		entrance.isTrigger = true;
 	}
 }
