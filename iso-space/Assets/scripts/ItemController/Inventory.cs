@@ -31,15 +31,7 @@ public class Inventory : MonoBehaviour {
 		dictItems = new Dictionary<int, TupleItem>();
 		player = GameObject.Find(PLAYER_NAME);
 	} // end : Start
-
-
-	void Update() {
-		// TODO: remove
-		// just for demonstration purposes
-		if(Input.GetKeyDown(KeyCode.Q))
-			DumpItem(1);
-	} // end : Update
-	
+    	
 
 	/* AddToInventory()
 	 *  Adds one element of item inside the inventory.
