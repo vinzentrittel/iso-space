@@ -17,8 +17,9 @@ public class InventoryDisplay : MonoBehaviour {
 
     private bool hasChanged;
 
-    public GameObject ItemIcon;
-    public GameObject ItemSlot;
+    public GameObject itemIcon;
+    public GameObject itemCountText;
+    public GameObject itemSlot;
     
 
     void Start()
@@ -29,16 +30,33 @@ public class InventoryDisplay : MonoBehaviour {
         var slotPanel = transform.Find(DisplayPanelName).Find(SlotPanelName);
 
         inventory = transform.parent.GetComponent<Inventory>();
-        items = inventory.dictItems;
+        UpdateItems();
 
         // populate inventory with slots
         for (int i = 0; i < SlotCount; i++)
         {
-            var currentSlot = Instantiate(ItemSlot);
+            var currentSlot = Instantiate(itemSlot);
             currentSlot.transform.SetParent(slotPanel);
             slots.Add(currentSlot);
 
             slotsFree.Add(ItemDatabase.Item.INVALID_ID);
+        }
+    }
+
+
+    void Update()
+    {
+        if (hasChanged)
+        {
+            for (var i = 0; i < SlotCount; i++)
+            {
+                if (slotsFree[i] != ItemDatabase.Item.INVALID_ID)
+                {
+                    UpdateItemCount(i);
+                }
+            }
+
+            hasChanged = false;
         }
     }
 
@@ -61,23 +79,28 @@ public class InventoryDisplay : MonoBehaviour {
         }
     }
 
-    public void RemoveItem()
+    public void RemoveItem(int id)
     {
         hasChanged = true;
+
+        UpdateItems();
+        if (NotHasItem(id)) { ClearSlotWith(id); }
     }
 
     private bool NotHasItem(int id)
     {
-        for (int i = 0; i < SlotCount; i++)
-            if (slotsFree[i] == id)
-                return false;
-        return true;
+        int index = NextSlot(id);
+
+        if (index < SlotCount && items.ContainsKey(id) && items[id].count > 0)
+            return false;
+        else
+            return true;
     }
 
-    private int NextSlot()
+    private int NextSlot(int itemId = ItemDatabase.Item.INVALID_ID)
     {
         for (int i = 0; i < SlotCount; i++)
-            if (slotsFree[i] == ItemDatabase.Item.INVALID_ID)
+            if (slotsFree[i] == itemId)
                 return i;
         return SlotCount;
     }
@@ -85,19 +108,67 @@ public class InventoryDisplay : MonoBehaviour {
 
     private void PopulateSlot(int slotId, string spriteName)
     {
-        var item = InstantiateAt(ItemIcon, slots[slotId]);
+        var item = InstantiateAt(itemIcon, slots[slotId]);
         var icon = item.GetComponent<Image>();
 
         icon.sprite = ItemIconRegister.GetInstance().GetIcon(spriteName);
     }
 
+    private void ClearSlotWith(int itemId)
+    {
+        int slotId = NextSlot(itemId);
+        if (slotId == SlotCount) { return; }
 
-    private GameObject InstantiateAt(GameObject src, GameObject trg)
+        while(slots[slotId].transform.childCount > 0)
+        {
+            Transform child = slots[slotId].transform.GetChild(0);
+            child.SetParent(null);
+            Destroy(child.gameObject);
+        }
+
+        DisplayElements();
+
+        slotsFree[slotId] = ItemDatabase.Item.INVALID_ID;
+    }
+
+
+    private void UpdateItems()
+    {
+        this.items = inventory.dictItems;
+    }
+
+
+    private void UpdateItemCount(int slotId)
+    {
+        var itemId    = slotsFree[slotId];
+        var itemCount = items[itemId].count;
+
+        if (itemCount > 1)
+        {
+            GameObject textBox;
+            var textComp = slots[slotId].GetComponentInChildren<Text>();
+            if (textComp == null)
+                textBox = InstantiateAt(itemCountText, slots[slotId], itemCountText.transform.localPosition);
+            else
+                textBox = textComp.gameObject;
+
+            var textMesh = textBox.GetComponent<Text>();
+            textMesh.text = itemCount.ToString();
+        }
+        else if (itemCount == 1)
+        {
+            var textMesh = slots[slotId].GetComponentInChildren<Text>();
+            if (textMesh) { textMesh.text = ""; }
+        }
+    }
+
+
+    private GameObject InstantiateAt(GameObject src, GameObject trg, Vector3 localPosition = default(Vector3))
     {
         var obj = Instantiate(src);
         // snap to parent
         obj.transform.SetParent(trg.transform);
-        obj.transform.localPosition = Vector3.zero;
+        obj.transform.localPosition = localPosition;
 
         return obj;
     }
@@ -109,5 +180,14 @@ public class InventoryDisplay : MonoBehaviour {
         message += " Currently " + SlotCount.ToString() + " slots available.";
 
         throw new ArgumentOutOfRangeException(paramName: message);
+    }
+
+    private void DisplayElements()
+    {
+        for(int i = 0; i < SlotCount; i++)
+            foreach(Transform child in slots[i].transform)
+            {
+                Debug.LogFormat("{0}: {1}", slots[i].name, child.gameObject.name);
+            }
     }
 }
