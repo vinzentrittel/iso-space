@@ -15,13 +15,13 @@ public class Inventory : MonoBehaviour {
 	//private const string PREFAB_PATH = ItemPrefabRegister.PREFAB_PATH;
 	private const string PLAYER_NAME = "Player";
 
-	private Dictionary<int, TupleItem> dictItems;
+    public Dictionary<int, TupleItem> dictItems { get; private set; }
 	private GameObject player;
 
 	[Tooltip("Number of instances allowed in the inventory")]
 	public int stackSize = 5;
 
-	struct TupleItem {
+	public struct TupleItem {
 		public int	count;
 		public Item data;
 	}
