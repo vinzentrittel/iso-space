@@ -32,7 +32,7 @@ public class ItemSlot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public void OnPointerExit (PointerEventData eventData)
     {
         SetAlpha(0);
-        inventory.SelectedSlot = InventoryDisplay.NoSlot;
+        inventory.SelectedSlot = InventoryDisplay.InvalidSlot;
     }
 
     private void SetAlpha(int alpha)

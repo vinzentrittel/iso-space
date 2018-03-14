@@ -16,6 +16,7 @@ public class InventoryDisplay : MonoBehaviour {
     private List<int> slotsFree;
 
     private bool hasChanged;
+    private Tooltip tooltip;
 
     public GameObject itemIcon;
     public GameObject itemCountText;
@@ -24,7 +25,7 @@ public class InventoryDisplay : MonoBehaviour {
     public KeyCode RemoveKey = KeyCode.Q;
 
     public int SelectedSlot { set; private get; }
-    public const int NoSlot = -1;
+    public const int InvalidSlot = -1;
     
 
     void Start()
@@ -47,6 +48,10 @@ public class InventoryDisplay : MonoBehaviour {
 
             slotsFree.Add(ItemDatabase.Item.INVALID_ID);
         }
+
+        SelectedSlot = InvalidSlot;
+        tooltip = gameObject.GetComponentInChildren<Tooltip>();
+        tooltip.Deactivate();
     }
 
 
@@ -64,14 +69,18 @@ public class InventoryDisplay : MonoBehaviour {
 
             hasChanged = false;
         }
-        else
+
+        if (Input.GetKeyDown(RemoveKey))
         {
-            if (Input.GetKeyDown(RemoveKey))
-            {
-                if(SelectedSlot != NoSlot)
-                    inventory.DumpItem(slotsFree[SelectedSlot]);
-            }
+            if(SelectedSlot != InvalidSlot)
+                inventory.DumpItem(slotsFree[SelectedSlot]);
         }
+
+        // show tooltip if something is selected
+        if (SelectedSlot != InvalidSlot)
+            tooltip.Activate(slotsFree[SelectedSlot]);
+        else
+            tooltip.Deactivate();
     }
 
 
