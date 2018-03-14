@@ -20,6 +20,11 @@ public class InventoryDisplay : MonoBehaviour {
     public GameObject itemIcon;
     public GameObject itemCountText;
     public GameObject itemSlot;
+
+    public KeyCode RemoveKey = KeyCode.Q;
+
+    public int SelectedSlot { set; private get; }
+    public const int NoSlot = -1;
     
 
     void Start()
@@ -37,6 +42,7 @@ public class InventoryDisplay : MonoBehaviour {
         {
             var currentSlot = Instantiate(itemSlot);
             currentSlot.transform.SetParent(slotPanel);
+            currentSlot.GetComponent<ItemSlot>().SlotId = i;
             slots.Add(currentSlot);
 
             slotsFree.Add(ItemDatabase.Item.INVALID_ID);
@@ -57,6 +63,14 @@ public class InventoryDisplay : MonoBehaviour {
             }
 
             hasChanged = false;
+        }
+        else
+        {
+            if (Input.GetKeyDown(RemoveKey))
+            {
+                if(SelectedSlot != NoSlot)
+                    inventory.DumpItem(slotsFree[SelectedSlot]);
+            }
         }
     }
 
@@ -116,7 +130,7 @@ public class InventoryDisplay : MonoBehaviour {
 
     private void ClearSlotWith(int itemId)
     {
-        int slotId = NextSlot(itemId);
+        var slotId = NextSlot(itemId);
         if (slotId == SlotCount) { return; }
 
         while(slots[slotId].transform.childCount > 0)
