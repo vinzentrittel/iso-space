@@ -37,7 +37,7 @@ public class StoreItem : MonoBehaviour {
 
 		inventory  = FindObjectOfType(typeof(Inventory)) as Inventory;
 		if(inventory == null)
-			Debug.LogError("Cannot find InventoryController in scene.");
+			Debug.LogError("Cannot find Inventory in scene.");
 	}
 
 
