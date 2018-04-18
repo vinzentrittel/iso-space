@@ -527,6 +527,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   actionKey: 101
+  PLAYER_TAG: Player
+  isMoving: 0
+  isDumpable: 0
+  storeFirst: 0
+  player: {fileID: 0}
+  parent: {fileID: 0}
+  storeItem: {fileID: 0}
 --- !u!23 &384869721
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -606,6 +613,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 500d22f44b1b42e4894ca2fcc5ebafae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inventory: {fileID: 0}
   actionKey: 101
   itemID: 3
 --- !u!114 &384869726
@@ -722,6 +730,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e560cbd2fc00d140a39e6f25973b082, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  entrance: {fileID: 0}
 --- !u!65 &442609193
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1188,6 +1197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0aa70a4707863f4d9d0312bbdf48cf2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inventory: {fileID: 0}
   actionKey: 101
 --- !u!1 &939005433
 GameObject:
